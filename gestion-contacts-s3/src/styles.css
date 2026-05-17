@@ -1,0 +1,11 @@
+/* ============================================================
+   EXERCICE 3 — Styles globaux pour la directive @HostBinding
+   ============================================================ */
+.active  { border: 2px solid #4CAF50; }
+.hovered { background: #FFF9C4; }
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 20px;
+  color: #333;
+}

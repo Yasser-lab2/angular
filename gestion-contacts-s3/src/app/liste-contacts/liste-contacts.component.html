@@ -1,0 +1,109 @@
+<!-- ============================================================
+     EXERCICE 1 — @if / @for / @switch
+     EXERCICE 2 — ngClass, ngStyle
+     EXERCICE 4 — Pipes built-in & personnalisés
+     ============================================================ -->
+<div>
+  <h2>Contacts ({{ contacts.length }})</h2>
+
+  <!-- ── Boutons filtre (Event Binding) ── -->
+  <button (click)="filtreActif = null">Tous ({{ contacts.length }})</button>
+  <button (click)="filtreActif = true">Actifs</button>
+  <button (click)="filtreActif = false">Inactifs</button>
+
+  <!-- ── @if : message si liste vide ── -->
+  @if (contactsFiltres.length === 0) {
+    <p>Aucun contact dans cette catégorie.</p>
+  }
+
+  <!-- ── @if / @else if / @else ── -->
+  @if (contacts.length > 10) {
+    <p>📈 Carnet bien rempli !</p>
+  } @else if (contacts.length > 0) {
+    <p>📈 {{ contacts.length }} contact(s) enregistré(s)</p>
+  } @else {
+    <p>📈 Le carnet est vide.</p>
+  }
+
+  <!-- ── @for avec variables $index, $first, $last, $even, $count ── -->
+  <ul>
+    @for (c of contactsFiltres; track c.email; let i = $index) {
+      <li
+        [ngClass]="{
+          'contact-actif':   c.actif,
+          'contact-inactif': !c.actif,
+          'top-score':       c.score >= 16,
+          'premier-item':    $first
+        }"
+        appSurvol
+      >
+        <!-- Numéro de ligne -->
+        <span>{{ i + 1 }}.</span>
+
+        <!-- Nom avec pipe uppercase (Exercice 4) + directive survol -->
+        <strong>{{ c.nom | uppercase }}</strong> —
+
+        <!-- Email tronqué avec pipe slice (Exercice 4) -->
+        <em>{{ c.email | slice:0:20 }}</em>
+
+        <!-- Score formaté (Exercice 4) -->
+        Score : <span [ngClass]="'score-' + (c.score >= 16 ? 'excellent' : c.score >= 10 ? 'passable' : 'echec')">
+          {{ c.score | number:'1.1-1' }}/20
+        </span>
+        ({{ c.score / 20 | percent:'1.0-0' }})
+
+        <!-- Pipes chaînés : initiales (Exercice 4) -->
+        <small>Initiales : {{ c.nom | initiales }}</small>
+
+        <!-- Mention selon le score (Exercice 4) -->
+        <small>{{ c.score | mention }}</small>
+
+        <!-- ── @switch : Rôle du contact (Exercice 1 - Partie D) ── -->
+        @switch (c.role) {
+          @case ('admin') {
+            <span>🔑 Admin</span>
+          }
+          @case ('user') {
+            <span>👤 Utilisateur</span>
+          }
+          @case ('guest') {
+            <span>👋 Visiteur</span>
+          }
+          @default {
+            <span>❓ Rôle inconnu</span>
+          }
+        }
+
+        <!-- Indicateur actif/inactif -->
+        @if (c.actif) { <span>✅ Actif</span> }
+        @else         { <span>❌ Inactif</span> }
+
+        <!-- Marqueur premier/dernier -->
+        @if ($first) { <small> (Premier)</small> }
+        @if ($last)  { <small> (Dernier)</small>  }
+
+        <!-- Boutons d'action (Exercice 5) -->
+        <button (click)="supprimer(c.email)">Supprimer</button>
+        <button (click)="toggleActif(c.email)">
+          {{ c.actif ? 'Désactiver' : 'Activer' }}
+        </button>
+      </li>
+    } @empty {
+      <li>Aucun résultat pour ce filtre.</li>
+    }
+  </ul>
+
+  <!-- ── Tableau avec couleurs alternées via $even / $odd ── -->
+  <table border="1" cellpadding="5">
+    <thead>
+      <tr><th>Nom</th><th>Score</th><th>Mention</th></tr>
+    </thead>
+    @for (c of contacts; track c.email; let pair = $even) {
+      <tr [style.background]="pair ? '#F5F5F5' : '#FFFFFF'">
+        <td>{{ c.nom }}</td>
+        <td>{{ c.score }}/20</td>
+        <td>{{ c.score | mention }}</td>
+      </tr>
+    }
+  </table>
+</div>
